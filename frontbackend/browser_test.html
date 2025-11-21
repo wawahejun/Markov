@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Privacy Discovery Test</title>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="test-errors" style="color: red; white-space: pre-wrap;"></div>
+  <script>
+    window.addEventListener('error', function(e) {
+      document.getElementById('test-errors').textContent += '\nError: ' + e.message + '\n' + e.filename + ':' + e.lineno;
+    });
+    window.addEventListener('unhandledrejection', function(e) {
+      document.getElementById('test-errors').textContent += '\nPromise rejection: ' + e.reason;
+    });
+  </script>
+  <script type="module" src="http://localhost:3000/src/main.tsx"></script>
+</body>
+</html>

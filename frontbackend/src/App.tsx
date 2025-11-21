@@ -13,20 +13,31 @@ import { cn } from './components/ui/utils';
 
 // Background Particles Component
 const StarField = () => {
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(20)].map((_, i) => (
+      {dimensions.width > 0 && [...Array(20)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute rounded-full"
           initial={{
-            x: Math.random() * window.innerWidth,
-            y: Math.random() * window.innerHeight,
+            x: Math.random() * dimensions.width,
+            y: Math.random() * dimensions.height,
             opacity: Math.random() * 0.3 + 0.1,
             scale: Math.random() * 0.5 + 0.5
           }}
           animate={{
-            y: [null, Math.random() * window.innerHeight],
+            y: [null, Math.random() * dimensions.height],
             opacity: [null, Math.random() * 0.3 + 0.1]
           }}
           transition={{
@@ -46,7 +57,7 @@ const StarField = () => {
 };
 
 export default function App() {
-  const [activePage, setActivePage] = useState('landing');
+  const [activePage, setActivePage] = useState('discovery');
   const [calendarOpen, setCalendarOpen] = useState(false);
 
   const renderPage = () => {
