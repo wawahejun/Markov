@@ -4,17 +4,21 @@ from contextlib import asynccontextmanager
 import os
 from dotenv import load_dotenv
 
-from app.routers import users, recommendations, analytics
+from app.routers import users, recommendations, analytics, events, profiles
 from app.core.config import settings
-from app.core.database import init_db, close_db
+from app.core.postgres import init_db
 from app.core.walrus import init_walrus
 
 load_dotenv()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 启动时初始化
-    await init_db()
+    # 启动时初始化数据库
+    try:
+        await init_db()
+        print("✅ Database initialized successfully")
+    except Exception as e:
+        print(f"⚠️ Database initialization failed: {e}")
     await init_walrus()
     yield
     # 关闭时清理资源
@@ -39,6 +43,8 @@ app.add_middleware(
 app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
 app.include_router(recommendations.router, prefix="/api/v1/recommendations", tags=["recommendations"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
+app.include_router(events.router, prefix="/api/v1/events", tags=["events"])
+app.include_router(profiles.router, prefix="/api/v1/users", tags=["profiles"])
 
 @app.get("/")
 async def root():
